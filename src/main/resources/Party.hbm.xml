@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+  ~ Hibernate, Relational Persistence for Idiomatic Java
+  ~
+  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  -->
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<!--
+
+  This mapping demonstrates how to map a collection
+  <key> to one of the primary key columns of an
+  associated child class with a composite key. This
+  is very useful for legacy data!
+     
+-->
+
+<hibernate-mapping package="com.digiwes.frameworkx.engagedparty.party" >
+
+    <class name="Party" table="party">
+
+		<id name="partyId" column="id" type="int">
+			<generator class="increment"></generator>
+		</id>
+		<property name="name" column="name" type="string"/>
+		<component name="validFor" class="com.digiwes.frameworkx.common.TimePeriod">
+			<property name="startDateTime" column="startDateTime"/>
+			<property name="endDateTime" column="endDateTime"/>
+		</component>
+		<joined-subclass name="com.digiwes.frameworkx.engagedparty.party.Individual" table="Individual">
+			<key column="id"/>
+			<property name="gender" column="gender" type="java.lang.String"></property>
+			<property name="placeOfBirth" type="java.lang.String"></property>
+			<property name="disabilities" type="java.lang.String"></property>
+			<property name="nationality" type="java.lang.String"></property>
+			<property name="maritalStatus" type="java.lang.String"></property>
+			<set name="_individualName" table="individualname"  inverse="true"   cascade="save-update">
+				<key>
+					<column name="partyId" not-null="true" />
+				</key>
+				<one-to-many class="com.digiwes.frameworkx.engagedparty.party.IndividualName" />
+			</set>
+		</joined-subclass>
+		<joined-subclass name="com.digiwes.frameworkx.engagedparty.party.Organization" table="Organization">
+			<key column="id"/>
+			<property name="isLegalEntity"></property>
+			<component name="existsDuring" class="com.digiwes.frameworkx.common.TimePeriod">
+				<property name="startDateTime" column="existsStartDateTime"/>
+				<property name="endDateTime" column="existsEndDateTime"/>
+			</component>
+		</joined-subclass>
+	</class>
+
+</hibernate-mapping>
